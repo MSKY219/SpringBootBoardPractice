@@ -57,4 +57,20 @@ public class BoardService {
             return null;
         }
     }
+
+    // 수정된 게시글 등록하기
+    public BoardDTO update(BoardDTO boardDTO) {
+       BoardEntity boardEntity = BoardEntity.toUpdateEntity(boardDTO);
+        boardRepository.save(boardEntity);
+        // save() 메서드는 insert와 update를 담당한다.
+        // insert와 update를 구분하기 위해서는 파라미터 값으로 id가 있는지 없는지를 확인한다.
+        // BoardEntity의 toSaveEntity() 메서드에서는 id가 없으므로 insert로 인식한다.
+
+        return findById(boardDTO.getId());
+    }
+
+    // 게시글 삭제
+    public void delete(Long id) {
+        boardRepository.deleteById(id);
+    }
 }

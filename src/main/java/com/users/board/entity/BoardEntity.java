@@ -40,4 +40,15 @@ public class BoardEntity extends BaseEntity{
         boardEntity.setBoardHits(0);
         return boardEntity;
     }
+
+    // 수정된 게시글 등록하기
+    public static BoardEntity toUpdateEntity(BoardDTO boardDTO) {
+        BoardEntity boardEntity = new BoardEntity();
+        boardEntity.setId(boardDTO.getId());
+        boardEntity.setBoardWriter(boardDTO.getBoardWriter());
+        boardEntity.setBoardPass(boardDTO.getBoardPass());
+        boardEntity.setBoardTitle(boardDTO.getBoardTitle());
+        boardEntity.setBoardContents(boardDTO.getBoardContents());
+        return boardEntity;
+    }
 }
