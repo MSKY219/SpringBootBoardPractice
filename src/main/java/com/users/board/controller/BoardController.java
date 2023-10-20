@@ -57,4 +57,29 @@ public class BoardController {
         model.addAttribute("board", boardDTO);
         return "detail";
     }
+
+    // 수정할 게시글 불러오기
+    @GetMapping("/update/{id}")
+    public String updateForm(@PathVariable Long id, Model model) {
+        BoardDTO boardDTO = boardService.findById(id);
+        model.addAttribute("boardUpdate", boardDTO);
+        return "update";
+    }
+
+    // 수정된 게시글 등록하기
+    @PostMapping("/update")
+    public String update(@ModelAttribute BoardDTO boardDTO, Model model) {
+        BoardDTO board = boardService.update(boardDTO);
+        model.addAttribute("board", board);
+        return "detail";
+        // return "redirect:/board/" + boardDTO.getId();
+        // 조회수 증가를 할 때 영향이 갈 수 있기 때문에 이렇게 쓸 수 있다 정도로만.
+    }
+
+    // 게시글 삭제
+    @GetMapping("/delete/{id}")
+    public String delete(@PathVariable Long id) {
+        boardService.delete(id);
+        return "redirect:/board/";
+    }
 }
