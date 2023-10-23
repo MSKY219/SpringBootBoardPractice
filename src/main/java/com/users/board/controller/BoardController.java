@@ -4,6 +4,9 @@ import com.users.board.dto.BoardDTO;
 import com.users.board.service.BoardService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -46,7 +49,7 @@ public class BoardController {
 
     // 특정 게시글 상세 조회
     @GetMapping("/{id}")
-    public String findById(@PathVariable Long id, Model model) {
+    public String findById(@PathVariable Long id, Model model, @PageableDefault(page=1) Pageable pageable) {
         // @PathVariable 경로상에 존재하는 값을 받기 위해 사용.
         // 상세 조회시 고려해야할 사항
         // 1. 해당 게시글의 조회수를 1 올리고
@@ -55,6 +58,7 @@ public class BoardController {
         boardService.updateHits(id);
         BoardDTO boardDTO = boardService.findById(id);
         model.addAttribute("board", boardDTO);
+        model.addAttribute("page", pageable.getPageNumber());
         return "detail";
     }
 
@@ -81,5 +85,25 @@ public class BoardController {
     public String delete(@PathVariable Long id) {
         boardService.delete(id);
         return "redirect:/board/";
+    }
+
+    // 페이징 요청
+    // /board/paging?page=1
+    @GetMapping("/paging")
+    public String paging(@PageableDefault(page = 1)Pageable pageable, Model model) {
+        pageable.getPageNumber();
+        Page<BoardDTO> boardList = boardService.paging(pageable);
+
+        int blockLimit = 3; // 실제 웹에서 보여질 페이징 수
+        int startPage = (((int)(Math.ceil((double)pageable.getPageNumber() / blockLimit))) - 1) * blockLimit + 1;
+        // 현재 한 페이지에서 가장 앞에 위치할 3개의 페이지 수를 보여준다. 그 페이지 숫자 중, 가장 먼저 보여질 숫자는 1, 4, 7, 10 같이 3씩 커진다.
+        int endPage = ((startPage + blockLimit - 1) < boardList.getTotalPages()) ? startPage + blockLimit - 1 : boardList.getTotalPages();
+        // 마지막 페이지는 3, 6, 9, 12 와 같이 나온다.
+        // 하지만 페이지가 8까지만 있을 경우, 초과하는 값은 페이지 수에 포함하지 않는다.
+
+        model.addAttribute("boardList", boardList);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+        return "paging";
     }
 }
