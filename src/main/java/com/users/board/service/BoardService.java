@@ -4,6 +4,10 @@ import com.users.board.dto.BoardDTO;
 import com.users.board.entity.BoardEntity;
 import com.users.board.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,5 +76,34 @@ public class BoardService {
     // 게시글 삭제
     public void delete(Long id) {
         boardRepository.deleteById(id);
+    }
+
+    // 페이징 요청
+    public Page<BoardDTO> paging(Pageable pageable) {
+        int page = pageable.getPageNumber() - 1;
+        int pageLimit = 3;
+        Page<BoardEntity> boardEntities = boardRepository.findAll(PageRequest.of(page, pageLimit, Sort.by(Sort.Direction.DESC, "id")));
+        // page = 몇 페이지를 볼 지,
+        // int page 에서 -1을 하는 이유는, page 위치에 있는 값은 0부터 시작한다. 실제 사용자가 요청한 페이지에서 1개를 뺴야함.
+        // pageLimit = 한 페이지에서 출력할 게시글의 개수.
+        // Sort.by(...) = 정렬 기준을 잡음.
+        // Sort.Direction.DESC = 내림차순 정렬
+        // "id" = Entitiy의 id를 기준으로
+        // 정리하면, 한 페이지당 게시글을 3개씩 보여주고 정렬 기준은 id 기준으로 내림차순 정렬.
+
+        System.out.println("boardEntities.getContent() = " + boardEntities.getContent()); // 요청 페이지에 해당하는 글
+        System.out.println("boardEntities.getTotalElements() = " + boardEntities.getTotalElements()); // 전체 글갯수
+        System.out.println("boardEntities.getNumber() = " + boardEntities.getNumber()); // DB로 요청한 페이지 번호
+        System.out.println("boardEntities.getTotalPages() = " + boardEntities.getTotalPages()); // 전체 페이지 갯수
+        System.out.println("boardEntities.getSize() = " + boardEntities.getSize()); // 한 페이지에 보여지는 글 갯수
+        System.out.println("boardEntities.hasPrevious() = " + boardEntities.hasPrevious()); // 이전 페이지 존재 여부
+        System.out.println("boardEntities.isFirst() = " + boardEntities.isFirst()); // 첫 페이지 여부
+        System.out.println("boardEntities.isLast() = " + boardEntities.isLast()); // 마지막 페이지 여부
+
+        // 목록에서 보여줄 내용 = id, writer, title, hits. createdTime
+        Page<BoardDTO> boardDTOS = boardEntities.map(board -> new BoardDTO(board.getId(), board.getBoardWriter(), board.getBoardTitle(), board.getBoardHits(), board.getBoardCreatedTime()));
+        // map() 메서드는 foreach 처럼 board 객체를 BoardDTO 객체로 하나씩 변환하는 기능을 가진다.
+
+        return boardDTOS;
     }
 }
