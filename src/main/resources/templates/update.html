@@ -14,6 +14,7 @@
     title: <input type="text" name="boardTitle" th:value="${boardUpdate.boardTitle}"> <br>
     contents: <textarea name="boardContents" cols="30" rows="10" th:text="${boardUpdate.boardContents}"></textarea> <br>
     <input type="hidden" name="boardHits" th:value="${boardUpdate.boardHits}">
+    <input type="hidden" name="fileAttached" th:value="${boardUpdate.fileAttached}" id="checkFile">
     <input type="button" value="글수정" onclick="boardUpdate()">
   </form>
 
@@ -27,6 +28,10 @@
         alert("비밀번호가 일치하지 않습니다!");
       }
     }
+
+    const check = document.getElementById("checkFile").value;
+
+    console.log("check : " + check);
   </script>
 
 </body>
