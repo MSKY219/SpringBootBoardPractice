@@ -30,8 +30,9 @@
    - DB 상에서 강제로 값을 1로 수정을 하면 정상적으로 나오는 것을 확인하여,
    - BoardDTO에서 board_file_table상에 이미지가 저장되어있는지 여부를 확인하는 if문을 수정함.
    - else if (!boardEntity.getBoardFileEntityList().isEmpty()) { ... }
-
-
+ 
+23.10.26
+- 게시판 댓글 기능 구현
 
 
 참고영상) https://www.youtube.com/playlist?list=PLV9zd3otBRt7jmXvwCkmvJ8dH5tR_20c0
