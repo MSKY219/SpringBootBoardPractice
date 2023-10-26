@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.xml.stream.events.Comment;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +44,9 @@ public class BoardEntity extends BaseEntity {
     private List<BoardFileEntity> boardFileEntityList = new ArrayList<>();
     // 게시글 하나에 여러 파일을 올릴 수 있기 때문에 List<>를 사용한다.
 
-
+    @OneToMany(mappedBy = "boardEntity", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    // 게시글이 삭제되면 댓글도 삭제되게 설정.
+    private List<CommentEntity> commentEntityList = new ArrayList<>();
 
     public static BoardEntity toSaveEntity(BoardDTO boardDTO) {
         BoardEntity boardEntity = new BoardEntity();
